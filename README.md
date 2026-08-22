@@ -8,10 +8,14 @@ Stack: Next.js 14 (App Router) · TypeScript · Tailwind CSS · Firebase Realtim
 
 Este projeto roda **100% local, sem deploy em nuvem** — é feito pra uso pessoal, só na sua máquina.
 
-- **Para estudar:** dê duplo-clique em [`iniciar-ava.bat`](iniciar-ava.bat). Uma janela preta abre e fica rodando — não feche ela enquanto estiver usando o app. Acesse **http://localhost:3010** no navegador.
-- **Para encerrar:** feche a janela do `iniciar-ava.bat`, ou dê duplo-clique em [`parar-ava.bat`](parar-ava.bat).
-- Na primeira execução o script compila o projeto automaticamente (leva alguns minutos); nas próximas vezes abre em segundos.
-- Depois de qualquer mudança no código, rode `npm run build` de novo (ou apague a pasta `.next`) antes de usar `iniciar-ava.bat`, senão ele continua servindo a versão antiga compilada.
+**O AVA liga sozinho.** Assim que você entra na sua conta do Windows, ele já sobe automaticamente em segundo plano (sem abrir nenhuma janela) e fica no ar enquanto o PC estiver ligado. Basta abrir **http://localhost:3010** no navegador quando quiser estudar.
+
+Como isso funciona: existe um arquivo `AVA Concursos.vbs` (cópia de [`ava-servico-oculto.vbs`](ava-servico-oculto.vbs)) na pasta de Inicialização do Windows (`shell:startup`) — é o mesmo mecanismo que programas como Discord ou OneDrive usam pra abrir sozinhos no login. Ele só liga o servidor se a porta 3010 ainda não estiver em uso, então não tem risco de abrir duas cópias por engano. Os logs desse modo automático ficam em `ava-servidor.log` (na pasta do projeto), útil se algo parecer não estar funcionando.
+
+Controles manuais, se precisar:
+- **`iniciar-ava.bat`** — liga na força bruta, com uma janela visível mostrando o que está acontecendo (útil pra ver erros). Dá duplo-clique.
+- **`parar-ava.bat`** — desliga o servidor (seja o automático do login ou o manual).
+- Na primeira execução (ou depois de mudar o código) é preciso compilar de novo: rode `npm run build` na pasta do projeto, ou apague a pasta `.next` e use `iniciar-ava.bat`, que compila sozinho.
 
 O Node.js precisa estar instalado (você já tem — Node v24). O XAMPP não entra nessa parte: ele serve Apache/PHP, e o AVA é uma aplicação Next.js/Node — os dois rodam em paralelo na sua máquina sem conflito, em portas diferentes.
 

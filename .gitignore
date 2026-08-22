@@ -30,3 +30,6 @@ serviceAccountKey.json
 
 # store local (fallback sem Firebase configurado)
 /.data/
+
+# log do servidor rodando em segundo plano (tarefa agendada)
+ava-servidor.log
