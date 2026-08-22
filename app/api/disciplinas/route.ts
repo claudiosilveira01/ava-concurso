@@ -4,6 +4,9 @@ import { DISCIPLINAS_CONFIG } from "@/lib/constants";
 import { calcularProgresso } from "@/lib/utils";
 import type { Disciplina } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const disciplinas = (await readPath<Record<string, Disciplina>>("disciplinas")) || {};
@@ -15,7 +18,7 @@ export async function GET() {
           id: config.id,
           nome: config.nome,
           cor: config.cor,
-          emoji: config.emoji,
+          icone: config.icone,
           totalAulas: 0,
           totalAulasConcluidas: 0,
           progresso: 0,

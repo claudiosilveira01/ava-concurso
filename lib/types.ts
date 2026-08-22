@@ -15,7 +15,7 @@ export interface Disciplina {
   id: string;
   nome: string;
   cor: string;
-  emoji: string;
+  icone: string;
   totalAulas: number;
   totalAulasConcluidas: number;
   progresso: number; // 0-100
@@ -26,15 +26,14 @@ export interface Disciplina {
 
 export interface Aula {
   id: string;
-  numero: number;
-  titulo: string;
+  numero: number | null;
+  titulo: string; // assunto extraído de dentro do PDF, com fallback pro nome do arquivo
   disciplina: string;
-  data: string; // YYYY-MM-DD
-  googleDriveId?: string;
-  googleDriveUrl: string;
-  nomeArquivo?: string;
+  data: string | null; // YYYY-MM-DD extraída de dentro do PDF (nem todo PDF traz)
+  professor?: string;
+  caminhoArquivo: string; // caminho absoluto do PDF na pasta local
+  nomeArquivo: string;
   tamanho?: number;
-  tipo?: string;
   concluida: boolean;
   completadoEm: string | null;
   criadoEm: string;
@@ -87,19 +86,16 @@ export interface ProgressoSemanal {
   atualizado: string;
 }
 
-export interface EventoCalendario {
-  id: string;
-  googleCalendarId: string;
-  googleEventId?: string;
-  disciplina: string;
-  data: string; // YYYY-MM-DD
-  horario: string; // HH:mm
-  titulo: string;
-  descricao: string;
-  url: string;
-  notificacaoMinutos: number;
-  criadoEm: string;
-  sincronizadoEm: string;
+/** Agenda inteligente do dia: para cada disciplina do cronograma de hoje, qual é a próxima aula pendente. */
+export interface AgendaDia {
+  disciplinaId: string;
+  disciplinaNome: string;
+  cor: string;
+  icone: string;
+  aulaId: string | null;
+  assunto: string | null;
+  totalAulas: number;
+  totalAulasConcluidas: number;
 }
 
 export interface SyncResult {

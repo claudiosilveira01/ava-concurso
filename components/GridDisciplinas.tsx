@@ -26,7 +26,7 @@ export function GridDisciplinas() {
       );
       refetch();
     } catch (err) {
-      toast(err instanceof Error ? err.message : "Erro ao sincronizar com o Google Drive", "error");
+      toast(err instanceof Error ? err.message : "Erro ao sincronizar a biblioteca local", "error");
     } finally {
       setSincronizando(false);
     }
@@ -37,7 +37,7 @@ export function GridDisciplinas() {
       <div className="flex items-center justify-end">
         <Button variant="secondary" onClick={sincronizarTudo} disabled={sincronizando}>
           <RefreshCw className={cn("h-4 w-4", sincronizando && "animate-spin")} />
-          {sincronizando ? "Sincronizando..." : "Sincronizar com Google Drive"}
+          {sincronizando ? "Sincronizando..." : "Sincronizar Biblioteca"}
         </Button>
       </div>
 

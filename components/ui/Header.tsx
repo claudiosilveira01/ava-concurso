@@ -43,7 +43,7 @@ export function Header({ nomeUsuario = "Cláudio" }: { nomeUsuario?: string }) {
             {format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR })}
           </p>
           <h1 className="text-lg font-bold">
-            {saudacaoPorHorario()}, {nomeUsuario} 👋
+            {saudacaoPorHorario()}, {nomeUsuario}
           </h1>
         </div>
       </div>

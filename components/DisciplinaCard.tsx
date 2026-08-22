@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/Card";
+import { DisciplinaIcon } from "@/components/ui/DisciplinaIcon";
 import { DISCIPLINA_POR_ID } from "@/lib/constants";
 import type { Disciplina } from "@/lib/types";
 
 const COR_FALLBACK = "#3B82F6";
-const EMOJI_FALLBACK = "📚";
 
 export function DisciplinaCard({ disciplina }: { disciplina: Disciplina }) {
   const config = DISCIPLINA_POR_ID[disciplina.id];
-  const emoji = disciplina.emoji || config?.emoji || EMOJI_FALLBACK;
   const nome = disciplina.nome || config?.nome || disciplina.id;
   const cor = disciplina.cor || config?.cor || COR_FALLBACK;
 
@@ -17,7 +16,7 @@ export function DisciplinaCard({ disciplina }: { disciplina: Disciplina }) {
       <Card className="h-full transition-shadow hover:shadow-md">
         <CardContent className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">{emoji}</span>
+            <DisciplinaIcon disciplinaId={disciplina.id} className="h-6 w-6" style={{ color: cor }} />
             <h3 className="text-base font-bold">{nome}</h3>
           </div>
 

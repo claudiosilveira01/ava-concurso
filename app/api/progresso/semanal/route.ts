@@ -3,6 +3,9 @@ import { readPath } from "@/lib/store";
 import { calcularDiasConsecutivos, formatarDataISO, inicioDaSemana } from "@/lib/utils";
 import type { ProgressoSemanal, Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const semanaParam = request.nextUrl.searchParams.get("semana");

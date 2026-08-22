@@ -4,11 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Calendar,
+  CalendarDays,
   BookOpen,
   Library,
   FileText,
-  CalendarClock,
   BarChart3,
   GraduationCap,
 } from "lucide-react";
@@ -17,11 +16,10 @@ import { cn } from "@/lib/utils";
 
 const ICONS = {
   LayoutDashboard,
-  Calendar,
+  CalendarDays,
   BookOpen,
   Library,
   FileText,
-  CalendarClock,
   BarChart3,
 } as const;
 

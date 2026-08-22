@@ -2,7 +2,6 @@ import Link from "next/link";
 import { FileText, Library, BarChart3 } from "lucide-react";
 import { CartaoDoDia } from "@/components/CartaoDoDia";
 import { ChecklistDiario } from "@/components/ChecklistDiario";
-import { ProximosEventos } from "@/components/ProximosEventos";
 import { CardsMetricas } from "@/components/CardsMetricas";
 import { Card, CardContent } from "@/components/ui/Card";
 
@@ -20,10 +19,9 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-2">
           <CartaoDoDia />
-          <ChecklistDiario />
         </div>
         <div className="flex flex-col gap-6">
-          <ProximosEventos />
+          <ChecklistDiario />
           <Card>
             <CardContent className="flex flex-col gap-2">
               {ATALHOS.map((a) => (

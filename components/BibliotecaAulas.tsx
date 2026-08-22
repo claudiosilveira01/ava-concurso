@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { ExternalLink, RefreshCw, CalendarDays, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
@@ -15,7 +15,7 @@ import {
   sincronizarBiblioteca,
 } from "@/components/hooks/useAulas";
 import { DISCIPLINAS_CONFIG, DISCIPLINA_POR_ID } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { cn, formatarDataBR } from "@/lib/utils";
 import type { Aula } from "@/lib/types";
 
 const COR_FALLBACK = "#3B82F6";
@@ -53,7 +53,7 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
     const termo = busca.trim().toLowerCase();
     if (!termo) return aulas;
     return aulas.filter(
-      (aula) => aula.titulo.toLowerCase().includes(termo) || String(aula.numero).includes(termo)
+      (aula) => aula.titulo.toLowerCase().includes(termo) || String(aula.numero ?? "").includes(termo)
     );
   }, [aulas, busca]);
 
@@ -62,12 +62,12 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
     try {
       const resultado = await sincronizarBiblioteca();
       toast(
-        `${resultado.adicionadas} aulas adicionadas, ${resultado.atualizadas} atualizadas`,
+        `${resultado.adicionadas} aula(s) nova(s), ${resultado.atualizadas} atualizada(s)`,
         "success"
       );
       refetch();
     } catch (err) {
-      toast(err instanceof Error ? err.message : "Erro ao sincronizar com o Google Drive", "error");
+      toast(err instanceof Error ? err.message : "Erro ao sincronizar a biblioteca local", "error");
     } finally {
       setSincronizando(false);
     }
@@ -94,7 +94,7 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
             <option value="todas">Todas as disciplinas</option>
             {DISCIPLINAS_CONFIG.map((disciplina) => (
               <option key={disciplina.id} value={disciplina.id}>
-                {disciplina.emoji} {disciplina.nome}
+                {disciplina.nome}
               </option>
             ))}
           </Select>
@@ -117,7 +117,7 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
         <p className="text-sm text-red-500">{error}</p>
       ) : aulasFiltradas.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">
-          Nenhuma aula encontrada — sincronize com o Google Drive ou ajuste os filtros
+          Nenhuma aula encontrada — clique em Sincronizar ou ajuste os filtros
         </p>
       ) : (
         <div className="flex flex-col gap-2">
@@ -134,22 +134,35 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
                       onChange={(novoValor) => alternarConcluida(aula, novoValor)}
                       color={cor}
                     />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-0.5">
                       <span
                         className={cn(
                           "text-sm font-semibold",
                           aula.concluida && "text-[var(--muted)] line-through"
                         )}
                       >
-                        Aula {aula.numero} — {aula.titulo}
+                        {aula.numero != null ? `Aula ${aula.numero} — ` : ""}
+                        {aula.titulo}
                       </span>
                       <span className="text-xs font-medium" style={{ color: cor }}>
                         {nomeDisciplina}
                       </span>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-[var(--muted)]">
+                        <span className="flex items-center gap-1">
+                          <CalendarDays className="h-3 w-3" />
+                          {aula.data ? formatarDataBR(aula.data) : "Data não identificada"}
+                        </span>
+                        {aula.professor && (
+                          <span className="flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {aula.professor}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <a
-                    href={aula.googleDriveUrl}
+                    href={`/api/biblioteca/${aula.disciplinaId}/${aula.id}/arquivo`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 self-start rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 sm:self-auto"

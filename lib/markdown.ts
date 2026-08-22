@@ -38,25 +38,25 @@ export function gerarMarkdownRelatorio(dados: RelatorioFormData & { data: string
 
   return `# Relatório de Aprendizagem - ${formatarDataBR(dados.data)}
 
-## 📚 Disciplinas Estudadas
+## Disciplinas Estudadas
 ${disciplinas}
 
-## 💡 Conceitos Fundamentais Assimilados
+## Conceitos Fundamentais Assimilados
 ${linhasParaLista(dados.conceitos)}
 
-## ❓ Principais Dúvidas
+## Principais Dúvidas
 ${linhasParaLista(dados.duvidas)}
 
-## ⚠️ Erros Conceituais / Dificuldades
+## Erros Conceituais / Dificuldades
 ${linhasParaLista(dados.erros)}
 
-## 📊 Percentual de Acerto nos Exercícios
+## Percentual de Acerto nos Exercícios
 ${tabelaDesempenho}
 
-## 🎯 Pontos Positivos do Dia
+## Pontos Positivos do Dia
 ${linhasParaLista(dados.pontoPositivos)}
 
-## 📌 Ações para o Próximo Dia
+## Ações para o Próximo Dia
 ${linhasParaLista(dados.proximasAcoes)}
 `;
 }
@@ -95,7 +95,7 @@ ${r.markdown}`
 
   return `# Resumo da Semana - ${semanaLabel}
 
-## 📊 Estatísticas da Semana
+## Estatísticas da Semana
 - Dias estudados: ${ordenados.length}
 - Desempenho médio geral: **${mediaGeral}%**
 

@@ -1,8 +1,8 @@
 # 📚 AVA Concursos
 
-Ambiente Virtual de Aprendizagem pessoal para preparação de concursos públicos — centraliza cronograma, biblioteca de aulas (Google Drive), relatórios diários de aprendizagem, progresso e integração com Google Calendar.
+Ambiente Virtual de Aprendizagem pessoal para preparação de concursos públicos — centraliza cronograma, biblioteca de aulas (lida direto da pasta local de PDFs), relatórios diários de aprendizagem e progresso.
 
-Stack: Next.js 14 (App Router) · TypeScript · Tailwind CSS · Firebase Realtime Database · Google Drive API · Google Calendar API.
+Stack: Next.js 14 (App Router) · TypeScript · Tailwind CSS · Firebase Realtime Database (opcional) · pdf-parse.
 
 ## Uso diário (sem mexer em terminal)
 
@@ -19,6 +19,21 @@ Controles manuais, se precisar:
 
 O Node.js precisa estar instalado (você já tem — Node v24). O XAMPP não entra nessa parte: ele serve Apache/PHP, e o AVA é uma aplicação Next.js/Node — os dois rodam em paralelo na sua máquina sem conflito, em portas diferentes.
 
+## Biblioteca de aulas (lê direto da sua pasta de PDFs)
+
+Não tem integração com Google Drive nem nenhuma nuvem — o AVA lê os PDFs direto de `H:\Meu Drive\Documentos\POTENCIAL CONCURSOS` (configurável em `POTENCIAL_CONCURSOS_PATH`, ver `.env.example`), que já é uma pasta sincronizada localmente pelo Google Drive Desktop.
+
+Cada disciplina é uma subpasta (ex: `PORTUGUES`, `DIREITO_CONSTITUCIONAL`). Pra cada PDF, o AVA abre o arquivo de verdade e lê a primeira página pra extrair:
+- **Data real da aula** (campo `DATA:` do material) — é essa data que você usa pra achar a videoaula correspondente na plataforma do cursinho.
+- **Assunto da aula** — o título logo após a frase de efeito do material ("Seja você o nosso próximo aprovado!!!").
+- **Professor.**
+
+Se o PDF não tiver esse padrão (ex: listas de exercício sem cabeçalho), o AVA cai pro nome do arquivo como assunto. Essa lógica está em `lib/pdfParser.ts` e `lib/localLibrary.ts`.
+
+**Atualização automática:** o servidor sincroniza a biblioteca sozinho ao ligar (pega PDFs novos desde a última vez) e depois a cada 7 dias, enquanto ficar no ar — ver `instrumentation.ts`. Não precisa de Tarefa Agendada do Windows nem de clicar em nada. Ainda assim, dá pra forçar uma sincronização manual a qualquer momento pelo botão "Sincronizar" nas páginas Biblioteca ou Disciplinas.
+
+Ler o conteúdo de cada PDF é a parte mais lenta — por isso só acontece uma vez por arquivo (o AVA lembra o tamanho de cada PDF já processado e só reabre os que são novos ou mudaram).
+
 ## Setup de desenvolvimento
 
 ```bash
@@ -29,32 +44,16 @@ npm run dev
 
 Abra [http://localhost:3010](http://localhost:3010) (a porta 3010 evita conflito com outros projetos locais que usam a 3000).
 
-**O app funciona sem nenhuma credencial configurada.** Enquanto `.env.local` estiver vazio:
+**O app funciona sem nenhuma credencial configurada.** Enquanto `.env.local` estiver vazio (ou sem as variáveis do Firebase), os dados (disciplinas, aulas, relatórios, progresso) são gravados em `.data/db.json`, um arquivo local que imita a estrutura do Firebase Realtime Database — funciona perfeitamente bem sozinho, o Firebase é totalmente opcional.
 
-- Os dados (disciplinas, aulas, relatórios, progresso, calendário) são gravados em `.data/db.json`, um arquivo local que imita a estrutura do Firebase Realtime Database.
-- A sincronização com Google Drive e Google Calendar responde de forma silenciosa informando que ainda não está configurada, em vez de quebrar.
+### Firebase (opcional)
 
-Assim que as variáveis abaixo forem preenchidas em `.env.local`, o app troca automaticamente para o Firebase/Google reais — nenhum código precisa mudar.
-
-## Configuração
-
-### Firebase
+Só necessário se um dia quiser sincronizar os dados entre mais de um dispositivo — hoje o app é single-machine e não precisa disso.
 
 1. Crie um projeto em [console.firebase.google.com](https://console.firebase.google.com), ative o **Realtime Database**.
 2. Copie a configuração Web para as variáveis `NEXT_PUBLIC_FIREBASE_*`.
 3. Gere uma chave de service account (Configurações do Projeto → Contas de serviço → Gerar nova chave privada), cole o JSON inteiro (em uma linha) em `FIREBASE_ADMIN_SDK_KEY`.
 4. Publique as regras de segurança (veja `PRD_AVA_CONCURSOS.md`, seção "Regras de Segurança Firebase").
-
-### Google Drive + Google Calendar
-
-Ambas as APIs usam o mesmo par de credenciais OAuth (mesmo projeto no Google Cloud Console).
-
-1. Em [console.cloud.google.com](https://console.cloud.google.com), crie um projeto e ative **Google Drive API** e **Google Calendar API**.
-2. Crie credenciais OAuth 2.0 do tipo "Desktop App".
-3. Gere um refresh token autorizando os scopes `drive.readonly` e `calendar`.
-4. Preencha `GOOGLE_DRIVE_CLIENT_ID`, `GOOGLE_DRIVE_CLIENT_SECRET`, `GOOGLE_DRIVE_REFRESH_TOKEN`.
-5. `GOOGLE_DRIVE_FOLDER_ID` é o ID da pasta raiz no Drive (a pasta que contém uma subpasta por disciplina — ver mapeamento em `lib/constants.ts`).
-6. `GOOGLE_CALENDAR_ID` normalmente é `primary`.
 
 ## Scripts
 
@@ -70,18 +69,20 @@ npm run lint    # ESLint
 ```
 app/            páginas (App Router) + rotas de API (app/api/**/route.ts)
 components/     componentes React, components/ui/ (primitivos) e components/hooks/ (data fetching)
-lib/            tipos, constantes, camada de dados (store.ts), integrações Google, geração de Markdown
+lib/            tipos, constantes, camada de dados (store.ts), leitura de PDF/biblioteca local, geração de Markdown
 ```
 
-Veja `DESCRICAO_TECNICA_AVA_CONCURSOS.md` para o desenho completo de arquitetura e fluxos de dados, e `PRD_AVA_CONCURSOS.md` para o escopo funcional.
+Veja `DESCRICAO_TECNICA_AVA_CONCURSOS.md` para o desenho completo de arquitetura e fluxos de dados, e `PRD_AVA_CONCURSOS.md` para o escopo funcional (alguns detalhes desses documentos — Google Drive/Calendar — ficaram desatualizados depois da decisão de rodar 100% local; este README reflete o estado atual).
 
 ## Deploy em nuvem (não usado — decisão do projeto)
 
-O app roda só localmente por decisão do usuário (uso pessoal, uma máquina só). O `vercel.json` (cron de sincronização a cada hora) fica no repositório caso essa decisão mude no futuro, mas nada foi publicado — não existe GitHub remoto nem projeto no Vercel configurados. Sem sincronização automática por cron enquanto for local: use o botão "Sincronizar" nas páginas Biblioteca/Disciplinas/Calendário quando quiser atualizar.
+O app roda só localmente por decisão do usuário (uso pessoal, uma máquina só). Não existe GitHub remoto nem projeto no Vercel configurados.
 
 ## Troubleshooting
 
-- **"Google Drive não configurado"** ao sincronizar — normal até as credenciais do Google serem preenchidas; o app segue funcional com dados manuais.
+- **Aula aparece com "Data não identificada"** — o PDF dessa aula não tem o campo `DATA:` no padrão esperado (comum em listas de exercício). Não afeta o resto do app, só não dá pra usar essa data pra achar a videoaula na plataforma do cursinho.
+- **Assunto errado ou estranho** — a extração é por padrão de texto; PDFs fora do formato usual do cursinho podem confundir a lógica. O nome do arquivo é usado como respaldo.
+- **Pasta de aulas não encontrada** — confira se a unidade `H:\` (Google Drive Desktop) está conectada, ou ajuste `POTENCIAL_CONCURSOS_PATH` em `.env.local`.
 - **Dados sumiram depois de configurar o Firebase** — o app para de ler `.data/db.json` assim que `FIREBASE_ADMIN_SDK_KEY` é definido; os dados locais não são migrados automaticamente para o Firebase.
 - **Erros de tipo/lint** — rode `npm run build` antes de commitar; o projeto usa TypeScript `strict: true`.
 - **`iniciar-ava.bat` abre e fecha na hora / erro estranho** — abra um `cmd.exe` normal, rode `cd "C:\dev-projects\AVA Concurso"` e depois `iniciar-ava.bat` pra ver a mensagem de erro completa sem a janela fechar sozinha.

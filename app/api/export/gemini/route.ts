@@ -5,6 +5,9 @@ import { gerarMarkdownGemini } from "@/lib/markdown";
 import { formatarDataISO } from "@/lib/utils";
 import type { Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();

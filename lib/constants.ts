@@ -25,7 +25,7 @@ export const CRONOGRAMA_SEMANAL: Cronograma = {
   terça: ["Raciocínio Lógico Matemático", "Direito Constitucional"],
   quarta: ["Noções de Informática", "Direito Previdenciário"],
   quinta: ["Administração Pública", "Legislação Especial"],
-  sexta: ["Direito Penal/Processo Penal", "Ética/Arquivologia"],
+  sexta: ["Direito Penal", "Processo Penal", "Ética no Serviço Público", "Arquivologia"],
   sábado: ["Redação", "Revisão Geral"],
   domingo: [],
 };
@@ -34,28 +34,30 @@ export interface DisciplinaConfig {
   id: string;
   nome: string;
   cor: string;
-  emoji: string;
-  pastaGoogleDrive: string;
+  /** Nome de um ícone de components/ui/DisciplinaIcon.tsx (não emoji). */
+  icone: string;
+  /** Nome da subpasta dentro da pasta local de aulas (ver POTENCIAL_CONCURSOS_PATH em lib/localLibrary.ts). */
+  pastaLocal: string;
 }
 
 export const DISCIPLINAS_CONFIG: DisciplinaConfig[] = [
-  { id: "portugues", nome: "Língua Portuguesa", cor: "#3B82F6", emoji: "📖", pastaGoogleDrive: "PORTUGUES" },
-  { id: "raciocinio_logico", nome: "Raciocínio Lógico Matemático", cor: "#8B5CF6", emoji: "🧮", pastaGoogleDrive: "RACIOCINIO_LOGICO" },
-  { id: "direito_administrativo", nome: "Direito Administrativo", cor: "#10B981", emoji: "⚖️", pastaGoogleDrive: "DIREITO_ADMINISTRATIVO" },
-  { id: "direito_constitucional", nome: "Direito Constitucional", cor: "#EF4444", emoji: "📜", pastaGoogleDrive: "DIREITO_CONSTITUCIONAL" },
-  { id: "informatica", nome: "Noções de Informática", cor: "#F59E0B", emoji: "💻", pastaGoogleDrive: "NOCOES_DE_INFORMATICA" },
-  { id: "direito_previdenciario", nome: "Direito Previdenciário", cor: "#EC4899", emoji: "🏥", pastaGoogleDrive: "DIREITO_PREVIDENCIARIO_INSS" },
-  { id: "administracao_publica", nome: "Administração Pública", cor: "#06B6D4", emoji: "🏛️", pastaGoogleDrive: "ADMINISTRACAO_PUBLICA" },
-  { id: "legislacao", nome: "Legislação Especial", cor: "#F97316", emoji: "📋", pastaGoogleDrive: "LEGISLACAO" },
-  { id: "direito_penal", nome: "Direito Penal", cor: "#6366F1", emoji: "🚔", pastaGoogleDrive: "DIREITO_PENAL_TJ" },
-  { id: "processo_penal", nome: "Processo Penal", cor: "#FB7185", emoji: "📁", pastaGoogleDrive: "PROCESSO_PENAL_TJ" },
-  { id: "etica", nome: "Ética no Serviço Público", cor: "#14B8A6", emoji: "🤝", pastaGoogleDrive: "ETICA_NO_SERVICO_PUBLICO" },
-  { id: "arquivologia", nome: "Arquivologia", cor: "#64748B", emoji: "🗄️", pastaGoogleDrive: "ARQUIVOLOGIA" },
-  { id: "redacao", nome: "Redação", cor: "#84CC16", emoji: "✍️", pastaGoogleDrive: "REDACAO_TJ" },
+  { id: "portugues", nome: "Língua Portuguesa", cor: "#3B82F6", icone: "BookOpen", pastaLocal: "PORTUGUES" },
+  { id: "raciocinio_logico", nome: "Raciocínio Lógico Matemático", cor: "#8B5CF6", icone: "Calculator", pastaLocal: "RACIOCINIO_LOGICO" },
+  { id: "direito_administrativo", nome: "Direito Administrativo", cor: "#10B981", icone: "Landmark", pastaLocal: "DIREITO_ADMINISTRATIVO" },
+  { id: "direito_constitucional", nome: "Direito Constitucional", cor: "#EF4444", icone: "Scale", pastaLocal: "DIREITO_CONSTITUCIONAL" },
+  { id: "informatica", nome: "Noções de Informática", cor: "#F59E0B", icone: "Monitor", pastaLocal: "NOCOES_DE_INFORMATICA" },
+  { id: "direito_previdenciario", nome: "Direito Previdenciário", cor: "#EC4899", icone: "HeartPulse", pastaLocal: "DIREITO_PREVIDENCIARIO_INSS" },
+  { id: "administracao_publica", nome: "Administração Pública", cor: "#06B6D4", icone: "Building2", pastaLocal: "ADMINISTRACAO_PUBLICA" },
+  { id: "legislacao", nome: "Legislação Especial", cor: "#F97316", icone: "Gavel", pastaLocal: "LEGISLACAO" },
+  { id: "direito_penal", nome: "Direito Penal", cor: "#6366F1", icone: "ShieldAlert", pastaLocal: "DIREITO_PENAL_TJ" },
+  { id: "processo_penal", nome: "Processo Penal", cor: "#FB7185", icone: "FolderOpen", pastaLocal: "PROCESSO_PENAL_TJ" },
+  { id: "etica", nome: "Ética no Serviço Público", cor: "#14B8A6", icone: "Handshake", pastaLocal: "ETICA_NO_SERVICO_PUBLICO" },
+  { id: "arquivologia", nome: "Arquivologia", cor: "#64748B", icone: "Archive", pastaLocal: "ARQUIVOLOGIA" },
+  { id: "redacao", nome: "Redação", cor: "#84CC16", icone: "PenLine", pastaLocal: "REDACAO_TJ" },
 ];
 
 export const PASTA_PARA_DISCIPLINA: Record<string, string> = Object.fromEntries(
-  DISCIPLINAS_CONFIG.map((d) => [d.pastaGoogleDrive, d.id])
+  DISCIPLINAS_CONFIG.map((d) => [d.pastaLocal, d.id])
 );
 
 export const DISCIPLINA_POR_ID: Record<string, DisciplinaConfig> = Object.fromEntries(
@@ -69,15 +71,11 @@ export function nomeDisciplinaParaId(nome: string): string | undefined {
   return match?.id;
 }
 
-export const HORARIO_ESTUDO_DEFAULT = "09:00";
-export const NOTIFICACAO_MINUTOS_DEFAULT = 30;
-
 export const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: "LayoutDashboard" },
-  { href: "/cronograma", label: "Cronograma", icon: "Calendar" },
+  { href: "/cronograma", label: "Cronograma", icon: "CalendarDays" },
   { href: "/disciplinas", label: "Disciplinas", icon: "BookOpen" },
   { href: "/biblioteca", label: "Biblioteca", icon: "Library" },
   { href: "/relatorios", label: "Relatórios", icon: "FileText" },
-  { href: "/calendario", label: "Google Calendar", icon: "CalendarClock" },
   { href: "/progresso", label: "Progresso", icon: "BarChart3" },
 ] as const;

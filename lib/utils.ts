@@ -56,19 +56,6 @@ export function isDiaValido(dia: string): dia is DiaSemana {
   return (DIAS_SEMANA as string[]).includes(dia);
 }
 
-/** Extrai número, e título legível a partir de nomes de arquivo tipo "01 - PORTUGUES - VERBOS.pdf". */
-export function extrairMetadadosNomeArquivo(nomeArquivo: string, indiceFallback: number): { numero: number; titulo: string } {
-  const semExtensao = nomeArquivo.replace(/\.pdf$/i, "");
-  const match = semExtensao.match(/^\s*(\d+)\s*[-–]\s*(.+)$/);
-  if (match) {
-    const numero = parseInt(match[1], 10);
-    const resto = match[2].split(/[-–]/).map((s) => s.trim());
-    const titulo = resto.length > 1 ? resto.slice(1).join(" - ") : resto[0];
-    return { numero, titulo: titulo || resto[0] };
-  }
-  return { numero: indiceFallback, titulo: semExtensao.trim() };
-}
-
 export function calcularDiasConsecutivos(datasRelatorios: string[]): number {
   if (datasRelatorios.length === 0) return 0;
   const datasOrdenadas = [...new Set(datasRelatorios)].sort().reverse();

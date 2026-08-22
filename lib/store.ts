@@ -22,7 +22,7 @@ function seedInicial(): Record<string, unknown> {
       id: d.id,
       nome: d.nome,
       cor: d.cor,
-      emoji: d.emoji,
+      icone: d.icone,
       totalAulas: 0,
       totalAulasConcluidas: 0,
       progresso: 0,
@@ -47,7 +47,6 @@ function seedInicial(): Record<string, unknown> {
     // "progresso" fica de fora do seed: rotas que fazem readPath("progresso") tratam
     // qualquer valor salvo como já calculado, então um {} aqui faria elas devolverem
     // vazio em vez de cair no cálculo de fallback a partir de relatorios/disciplinas.
-    calendario: {},
   };
 }
 

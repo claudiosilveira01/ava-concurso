@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { readPath } from "@/lib/store";
 import type { Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request, { params }: { params: { data: string } }) {
   try {
     const relatorio = await readPath<Relatorio>(`relatorios/${params.data}`);

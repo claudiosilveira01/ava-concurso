@@ -4,6 +4,9 @@ import { CRONOGRAMA_SEMANAL } from "@/lib/constants";
 import { isDiaValido } from "@/lib/utils";
 import type { Cronograma } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const dia = request.nextUrl.searchParams.get("dia");

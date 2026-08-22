@@ -4,6 +4,9 @@ import { marcarAulaSchema } from "@/lib/validation";
 import { calcularProgresso } from "@/lib/utils";
 import type { Aula } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function POST(
   request: Request,
   { params }: { params: { disciplina: string; aulaId: string } }

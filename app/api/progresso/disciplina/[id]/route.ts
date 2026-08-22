@@ -3,6 +3,9 @@ import { readPath } from "@/lib/store";
 import { DISCIPLINA_POR_ID } from "@/lib/constants";
 import type { Aula, Disciplina, Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const config = DISCIPLINA_POR_ID[params.id];
@@ -15,7 +18,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       id: config.id,
       nome: config.nome,
       cor: config.cor,
-      emoji: config.emoji,
+      icone: config.icone,
       totalAulas: 0,
       totalAulasConcluidas: 0,
       progresso: 0,
@@ -33,7 +36,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
       ? relatoriosComDisciplina.reduce((soma, r) => soma + r.desempenho[params.id], 0) / relatoriosComDisciplina.length
       : 0;
 
-    const ultimasAulas = [...aulas].sort((a, b) => b.data.localeCompare(a.data)).slice(0, 5);
+    const ultimasAulas = [...aulas]
+      .sort((a, b) => (b.data ?? "").localeCompare(a.data ?? ""))
+      .slice(0, 5);
 
     return NextResponse.json(
       {

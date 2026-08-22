@@ -4,6 +4,9 @@ import { gerarMarkdownSemana } from "@/lib/markdown";
 import { formatarDataBR, formatarDataISO, inicioDaSemana } from "@/lib/utils";
 import type { Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
+import { DisciplinaIcon } from "@/components/ui/DisciplinaIcon";
 import { useToast } from "@/components/ui/Toast";
 import { useRelatorio, criarRelatorio, atualizarRelatorio } from "@/components/hooks/useRelatorios";
 import { relatorioFormSchema, type RelatorioFormInput } from "@/lib/validation";
@@ -137,8 +138,9 @@ export function FormularioRelatorio({ dataParaEditar }: { dataParaEditar?: strin
                     onChange={(checked) => alternarDisciplina(disciplina.id, checked)}
                     color={disciplina.cor}
                   />
-                  <span>
-                    {disciplina.emoji} {disciplina.nome}
+                  <span className="flex items-center gap-1.5">
+                    <DisciplinaIcon icone={disciplina.icone} className="h-4 w-4" style={{ color: disciplina.cor }} />
+                    {disciplina.nome}
                   </span>
                 </label>
               );
@@ -175,8 +177,9 @@ export function FormularioRelatorio({ dataParaEditar }: { dataParaEditar?: strin
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {DISCIPLINAS_CONFIG.filter((d) => disciplinasEstudadas.includes(d.id)).map((disciplina) => (
                 <div key={disciplina.id} className="flex flex-col gap-1">
-                  <label className="text-sm font-medium" style={{ color: disciplina.cor }}>
-                    {disciplina.emoji} {disciplina.nome}
+                  <label className="flex items-center gap-1.5 text-sm font-medium" style={{ color: disciplina.cor }}>
+                    <DisciplinaIcon icone={disciplina.icone} className="h-4 w-4" style={{ color: disciplina.cor }} />
+                    {disciplina.nome}
                   </label>
                   <Input
                     type="number"

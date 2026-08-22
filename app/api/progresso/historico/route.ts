@@ -3,6 +3,9 @@ import { readPath } from "@/lib/store";
 import { formatarDataISO, inicioDaSemana } from "@/lib/utils";
 import type { Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const semanasParam = request.nextUrl.searchParams.get("semanas");

@@ -5,6 +5,9 @@ import { gerarMarkdownRelatorio } from "@/lib/markdown";
 import { calcularDiasConsecutivos } from "@/lib/utils";
 import type { Disciplina, Progresso, Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 /** Recalcula e grava "progresso" a partir do estado atual de "relatorios" e "disciplinas". */
 async function recalcularProgresso(): Promise<void> {
   const relatorios = (await readPath<Record<string, Relatorio>>("relatorios")) || {};

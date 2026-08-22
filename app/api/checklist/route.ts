@@ -3,6 +3,9 @@ import { readPath, writePath } from "@/lib/store";
 import { slugify } from "@/lib/utils";
 import type { ChecklistDia } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 interface ChecklistItem {
   nome: string;
   concluida: boolean;

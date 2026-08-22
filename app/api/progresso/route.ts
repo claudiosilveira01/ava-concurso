@@ -3,6 +3,9 @@ import { readPath } from "@/lib/store";
 import { calcularDiasConsecutivos } from "@/lib/utils";
 import type { Disciplina, Progresso, Relatorio } from "@/lib/types";
 
+// sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const progressoSalvo = await readPath<Progresso>("progresso");

@@ -21,13 +21,6 @@ export const marcarAulaSchema = z.object({
   concluida: z.boolean(),
 });
 
-export const sincronizarCalendarSchema = z.object({
-  data: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-});
-
 export const exportGeminiSchema = z.object({
   formato: z.enum(["json", "markdown"]).default("markdown"),
   periodo: z.enum(["todas", "ultima_semana"]).default("ultima_semana"),
