@@ -5,7 +5,7 @@ import { useChecklist } from "@/components/hooks/useChecklist";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { DISCIPLINA_POR_ID, nomeDisciplinaParaId } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { ListChecks } from "lucide-react";
 
 const COR_FALLBACK = "#3B82F6";
@@ -16,7 +16,7 @@ export function ChecklistDiario() {
 
   const loading = loadingCronograma || checklist.loading;
   const total = disciplinasHoje.length;
-  const concluidas = disciplinasHoje.filter((nome) => checklist.checklist[nome]).length;
+  const concluidas = disciplinasHoje.filter((nome) => checklist.checklist[slugify(nome)]).length;
   const progresso = total ? Math.round((concluidas / total) * 100) : 0;
 
   return (
@@ -51,7 +51,7 @@ export function ChecklistDiario() {
               {disciplinasHoje.map((nome) => {
                 const id = nomeDisciplinaParaId(nome);
                 const cor = (id && DISCIPLINA_POR_ID[id]?.cor) || COR_FALLBACK;
-                const concluida = Boolean(checklist.checklist[nome]);
+                const concluida = Boolean(checklist.checklist[slugify(nome)]);
                 return (
                   <li
                     key={nome}

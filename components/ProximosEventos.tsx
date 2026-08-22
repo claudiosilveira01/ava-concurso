@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarSync, ExternalLink } from "lucide-react";
+import { RefreshCw, ExternalLink } from "lucide-react";
 import { useProximosEventos, sincronizarCalendario } from "@/components/hooks/useCalendar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -41,7 +41,7 @@ export function ProximosEventos() {
           onClick={handleSincronizar}
           disabled={sincronizando}
         >
-          <CalendarSync className="h-4 w-4" />
+          <RefreshCw className="h-4 w-4" />
           {sincronizando ? "Sincronizando..." : "Sincronizar com Google Calendar"}
         </Button>
       </CardHeader>

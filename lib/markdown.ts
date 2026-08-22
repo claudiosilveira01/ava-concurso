@@ -1,5 +1,11 @@
 import { formatarDataBR } from "./utils";
+import { DISCIPLINA_POR_ID } from "./constants";
 import type { Relatorio, RelatorioFormData } from "./types";
+
+/** Disciplinas são salvas por id (mesma chave usada em "desempenho"); aqui só exibimos o nome legível. */
+function nomeDisciplina(idOuNome: string): string {
+  return DISCIPLINA_POR_ID[idOuNome]?.nome ?? idOuNome;
+}
 
 function linhasParaLista(texto: string): string {
   if (!texto.trim()) return "- _nenhum registro_";
@@ -13,7 +19,8 @@ function linhasParaLista(texto: string): string {
 
 /** Gera o Markdown de um relatório diário no formato pronto para consumo pelo Gemini Notebook. */
 export function gerarMarkdownRelatorio(dados: RelatorioFormData & { data: string }): string {
-  const disciplinas = dados.disciplinasEstudadas.map((d) => `- [x] ${d}`).join("\n") || "- _nenhuma_";
+  const disciplinas =
+    dados.disciplinasEstudadas.map((d) => `- [x] ${nomeDisciplina(d)}`).join("\n") || "- _nenhuma_";
 
   const linhasDesempenho = Object.entries(dados.desempenho);
   const desempenhoMedio = linhasDesempenho.length
@@ -24,7 +31,7 @@ export function gerarMarkdownRelatorio(dados: RelatorioFormData & { data: string
     ? [
         "| Disciplina | Acertos |",
         "|------------|---------|",
-        ...linhasDesempenho.map(([disc, valor]) => `| ${disc} | ${valor}% |`),
+        ...linhasDesempenho.map(([disc, valor]) => `| ${nomeDisciplina(disc)} | ${valor}% |`),
         `| **Média** | **${desempenhoMedio}%** |`,
       ].join("\n")
     : "_sem exercícios registrados_";
@@ -75,7 +82,7 @@ export function gerarMarkdownSemana(relatorios: Relatorio[], semanaLabel: string
   const tabelaDisciplinas = Object.entries(desempenhoPorDisciplina)
     .map(([disc, valores]) => {
       const media = Math.round(valores.reduce((a, b) => a + b, 0) / valores.length);
-      return `| ${disc} | ${media}% |`;
+      return `| ${nomeDisciplina(disc)} | ${media}% |`;
     })
     .join("\n");
 
