@@ -30,7 +30,10 @@ function CardItemAgenda({ item, badge }: { item: AgendaDia; badge?: string }) {
           )}
         </div>
         {item.assunto ? (
-          <span className="text-sm">{item.assunto}</span>
+          <span className="text-sm">
+            {item.numero != null ? `Aula ${item.numero} — ` : ""}
+            {item.assunto}
+          </span>
         ) : item.totalAulas > 0 ? (
           <span className="flex items-center gap-1 text-sm text-[var(--muted)]">
             <CheckCircle2 className="h-3.5 w-3.5" />

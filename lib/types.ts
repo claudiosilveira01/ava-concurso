@@ -93,6 +93,7 @@ export interface AgendaDia {
   cor: string;
   icone: string;
   aulaId: string | null;
+  numero: number | null;
   assunto: string | null;
   totalAulas: number;
   totalAulasConcluidas: number;
