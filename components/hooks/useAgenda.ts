@@ -1,10 +1,17 @@
 "use client";
 
 import { useFetch } from "./useFetch";
-import type { AgendaDia } from "@/lib/types";
+import type { AgendaHojeResponse } from "@/lib/types";
 
-/** Agenda inteligente: para cada disciplina do cronograma de hoje, a próxima aula pendente. */
+/** Agenda inteligente: a próxima aula pendente de cada disciplina de hoje, mais a
+ * lista de revisão da semana (só vem preenchida quando hoje é sábado). */
 export function useAgendaHoje() {
-  const { data, loading, error, refetch } = useFetch<AgendaDia[]>("/api/dashboard/hoje");
-  return { agenda: data ?? [], loading, error, refetch };
+  const { data, loading, error, refetch } = useFetch<AgendaHojeResponse>("/api/dashboard/hoje");
+  return {
+    agenda: data?.agenda ?? [],
+    revisaoSemana: data?.revisaoSemana ?? [],
+    loading,
+    error,
+    refetch,
+  };
 }

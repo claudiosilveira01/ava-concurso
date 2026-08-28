@@ -64,11 +64,17 @@ export const DISCIPLINA_POR_ID: Record<string, DisciplinaConfig> = Object.fromEn
   DISCIPLINAS_CONFIG.map((d) => [d.id, d])
 );
 
+/**
+ * Casa um nome de disciplina (como os do cronograma) com o id correspondente.
+ * Só compara nome completo (case-insensitive) — CUIDADO: uma versão anterior comparava
+ * só a primeira palavra do nome, o que fazia "Direito Constitucional", "Direito
+ * Previdenciário" e "Direito Penal" caírem todos errado em "direito_administrativo"
+ * (primeiro "Direito ..." da lista). Os nomes usados em CRONOGRAMA_SEMANAL já batem
+ * exatamente com DISCIPLINAS_CONFIG, então match exato é suficiente.
+ */
 export function nomeDisciplinaParaId(nome: string): string | undefined {
-  const match = DISCIPLINAS_CONFIG.find(
-    (d) => d.nome.toLowerCase() === nome.toLowerCase() || nome.toLowerCase().includes(d.nome.toLowerCase().split(" ")[0])
-  );
-  return match?.id;
+  const alvo = nome.trim().toLowerCase();
+  return DISCIPLINAS_CONFIG.find((d) => d.nome.toLowerCase() === alvo)?.id;
 }
 
 export const NAV_ITEMS = [

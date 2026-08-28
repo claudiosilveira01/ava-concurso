@@ -32,6 +32,13 @@ export function inicioDaSemana(dataISO: string): string {
   return formatarDataISO(data);
 }
 
+/** Soma (ou subtrai, com número negativo) dias corridos a uma data YYYY-MM-DD. */
+export function adicionarDias(dataISO: string, dias: number): string {
+  const data = new Date(`${dataISO}T00:00:00`);
+  data.setDate(data.getDate() + dias);
+  return formatarDataISO(data);
+}
+
 export function calcularProgresso(concluidas: number, total: number): number {
   if (!total) return 0;
   return Math.round((concluidas / total) * 100);

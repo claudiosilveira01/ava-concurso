@@ -98,6 +98,25 @@ export interface AgendaDia {
   totalAulasConcluidas: number;
 }
 
+/** Item da lista de revisão de sábado: uma AgendaDia que ficou pendente, mais de qual dia/data. */
+export interface ItemRevisao extends AgendaDia {
+  diaOrigem: DiaSemana;
+  dataOrigem: string; // YYYY-MM-DD
+}
+
+/** Resposta de GET /api/dashboard/hoje. revisaoSemana só vem preenchida quando o dia é sábado. */
+export interface AgendaHojeResponse {
+  agenda: AgendaDia[];
+  revisaoSemana: ItemRevisao[];
+}
+
+/** Formato salvo em checklist/{data}/{chaveSlug}. */
+export interface ChecklistItemArmazenado {
+  nome: string;
+  concluida: boolean;
+  marcadoEm: string;
+}
+
 export interface SyncResult {
   adicionadas: number;
   atualizadas: number;

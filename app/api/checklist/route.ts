@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readPath, writePath } from "@/lib/store";
 import { slugify } from "@/lib/utils";
-import type { ChecklistDia } from "@/lib/types";
+import type { ChecklistDia, ChecklistItemArmazenado } from "@/lib/types";
 
 // sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
 export const dynamic = "force-dynamic";
-
-interface ChecklistItem {
-  nome: string;
-  concluida: boolean;
-  marcadoEm: string;
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +13,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Parâmetro 'data' é obrigatório" }, { status: 400 });
     }
 
-    const checklist = await readPath<Record<string, ChecklistItem>>(`checklist/${data}`);
+    const checklist = await readPath<Record<string, ChecklistItemArmazenado>>(`checklist/${data}`);
     if (!checklist) {
       return NextResponse.json({}, { status: 200 });
     }
@@ -44,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     const chaveSlug = slugify(disciplina);
-    const item: ChecklistItem = {
+    const item: ChecklistItemArmazenado = {
       nome: disciplina,
       concluida: Boolean(concluida),
       marcadoEm: new Date().toISOString(),

@@ -26,19 +26,22 @@ export async function pastaAulasExiste(): Promise<boolean> {
 }
 
 /**
- * Extrai número e título a partir do padrão real dos arquivos do cursinho:
- * "Aula_<N>_<titulo> (<PASTA_DISCIPLINA>).pdf". Serve de fallback para quando o
- * PDF não tem um "assunto" identificável no conteúdo (ex: listas de exercícios).
+ * Extrai número e título a partir do padrão real dos arquivos (renomeados manualmente
+ * pelo usuário): "Aula_<N>_<titulo> (<PASTA_DISCIPLINA>).pdf". Suporta sub-aulas com
+ * número decimal ("Aula_01.2_..." -> numero 1.2, ordenado certinho entre 1 e 2). Arquivos
+ * que não seguem o padrão "Aula_N" (ex: os que o próprio usuário prefixou com "MISFILED_"
+ * ou "SEM_MATCH_" por não ter certeza de qual aula eram) ficam com numero null — continuam
+ * aparecendo na Biblioteca, mas nunca são escolhidos como "próxima aula pendente".
  */
 function extrairInfoNomeArquivo(nomeArquivo: string): { numero: number | null; tituloArquivo: string } {
   let base = nomeArquivo.replace(/\.pdf$/i, "");
   base = base.replace(/\s*\([A-Za-zÀ-ÿ0-9_]+\)\s*$/, "");
 
-  const match = base.match(/^Aula[_\s]+(\d+)[_\s]*(.*)$/i);
+  const match = base.match(/^Aula[_\s]+(\d+(?:\.\d+)?)[_\s]*(.*)$/i);
   let numero: number | null = null;
   let resto = base;
   if (match) {
-    numero = parseInt(match[1], 10);
+    numero = parseFloat(match[1]);
     resto = match[2];
   }
 
@@ -128,7 +131,9 @@ export async function sincronizarBibliotecaLocal(): Promise<SyncResult> {
       const aula: Aula = {
         id: item.id,
         numero,
-        titulo: metadados.assunto || tituloArquivo,
+        // Nome do arquivo primeiro: o usuário renomeou tudo manualmente com títulos
+        // confiáveis. O assunto lido de dentro do PDF só entra como reserva.
+        titulo: tituloArquivo || metadados.assunto || item.nomeArquivo,
         disciplina: config.id,
         data: metadados.data,
         professor: metadados.professor || undefined,
