@@ -3,7 +3,7 @@
 ' "Inicializar" do usuario). So inicia se a porta 3010 ainda nao estiver
 ' em uso, pra nunca abrir duas copias sem querer.
 Set objShell = CreateObject("WScript.Shell")
-objShell.CurrentDirectory = "C:\dev-projects\AVA Concurso"
+objShell.CurrentDirectory = "C:\dev-projects\ava-concurso"
 
 portaLivre = objShell.Run("cmd /c netstat -ano | findstr "":3010"" | findstr LISTENING >nul", 0, True)
 
