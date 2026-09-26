@@ -21,7 +21,7 @@ O Node.js precisa estar instalado (você já tem — Node v24). O XAMPP não ent
 
 ## Biblioteca de aulas (lê direto da sua pasta de PDFs)
 
-Não tem integração com Google Drive nem nenhuma nuvem — o AVA lê os PDFs direto de `H:\Meu Drive\Documentos\POTENCIAL CONCURSOS` (configurável em `POTENCIAL_CONCURSOS_PATH`, ver `.env.example`), que já é uma pasta sincronizada localmente pelo Google Drive Desktop.
+Não tem integração com Google Drive nem nenhuma nuvem — o AVA lê os PDFs direto de `C:\Users\webap\Documents\POTENCIAL CONCURSOS` (configurável em `POTENCIAL_CONCURSOS_PATH`, ver `.env.example`).
 
 Cada disciplina é uma subpasta (ex: `PORTUGUES`, `DIREITO_CONSTITUCIONAL`). Pra cada PDF, o AVA abre o arquivo de verdade e lê a primeira página pra extrair:
 - **Data real da aula** (campo `DATA:` do material) — é essa data que você usa pra achar a videoaula correspondente na plataforma do cursinho.
@@ -53,7 +53,7 @@ Só necessário se um dia quiser sincronizar os dados entre mais de um dispositi
 1. Crie um projeto em [console.firebase.google.com](https://console.firebase.google.com), ative o **Realtime Database**.
 2. Copie a configuração Web para as variáveis `NEXT_PUBLIC_FIREBASE_*`.
 3. Gere uma chave de service account (Configurações do Projeto → Contas de serviço → Gerar nova chave privada), cole o JSON inteiro (em uma linha) em `FIREBASE_ADMIN_SDK_KEY`.
-4. Publique as regras de segurança (veja `PRD_AVA_CONCURSOS.md`, seção "Regras de Segurança Firebase").
+4. Publique as regras de segurança do Realtime Database (restrinja a leitura/escrita à sua conta).
 
 ## Scripts
 
@@ -72,18 +72,18 @@ components/     componentes React, components/ui/ (primitivos) e components/hook
 lib/            tipos, constantes, camada de dados (store.ts), leitura de PDF/biblioteca local, geração de Markdown
 ```
 
-Veja `DESCRICAO_TECNICA_AVA_CONCURSOS.md` para o desenho completo de arquitetura e fluxos de dados, e `PRD_AVA_CONCURSOS.md` para o escopo funcional (alguns detalhes desses documentos — Google Drive/Calendar — ficaram desatualizados depois da decisão de rodar 100% local; este README reflete o estado atual).
+A documentação de produto (visão, escopo funcional, decisões de arquitetura e histórico) vive fora do repositório, em `BRAIN/03_PROJETOS/AVA_CONCURSO/` (Obsidian). Este README cobre só o uso e a execução do código.
 
 ## Deploy em nuvem (não usado — decisão do projeto)
 
-O app roda só localmente por decisão do usuário (uso pessoal, uma máquina só). Não existe GitHub remoto nem projeto no Vercel configurados.
+O app roda só localmente por decisão do usuário (uso pessoal, uma máquina só). Não há deploy no Vercel nem repositório remoto no GitHub — o versionamento é um `git` local nesta máquina, só pra histórico. Nada roda na nuvem.
 
 ## Troubleshooting
 
 - **Aula aparece com "Data não identificada"** — o PDF dessa aula não tem o campo `DATA:` no padrão esperado (comum em listas de exercício). Não afeta o resto do app, só não dá pra usar essa data pra achar a videoaula na plataforma do cursinho.
 - **Assunto errado ou estranho** — a extração é por padrão de texto; PDFs fora do formato usual do cursinho podem confundir a lógica. O nome do arquivo é usado como respaldo.
-- **Pasta de aulas não encontrada** — confira se a unidade `H:\` (Google Drive Desktop) está conectada, ou ajuste `POTENCIAL_CONCURSOS_PATH` em `.env.local`.
+- **Pasta de aulas não encontrada** — confira se `C:\Users\webap\Documents\POTENCIAL CONCURSOS` existe, ou ajuste `POTENCIAL_CONCURSOS_PATH` em `.env.local`.
 - **Dados sumiram depois de configurar o Firebase** — o app para de ler `.data/db.json` assim que `FIREBASE_ADMIN_SDK_KEY` é definido; os dados locais não são migrados automaticamente para o Firebase.
 - **Erros de tipo/lint** — rode `npm run build` antes de commitar; o projeto usa TypeScript `strict: true`.
-- **`iniciar-ava.bat` abre e fecha na hora / erro estranho** — abra um `cmd.exe` normal, rode `cd "C:\dev-projects\AVA Concurso"` e depois `iniciar-ava.bat` pra ver a mensagem de erro completa sem a janela fechar sozinha.
+- **`iniciar-ava.bat` abre e fecha na hora / erro estranho** — abra um `cmd.exe` normal, rode `cd C:\dev-projects\ava-concurso` e depois `iniciar-ava.bat` pra ver a mensagem de erro completa sem a janela fechar sozinha.
 - **Porta 3010 já em uso** — rode `parar-ava.bat` primeiro (ele mata o processo que estiver naquela porta) e tente de novo.

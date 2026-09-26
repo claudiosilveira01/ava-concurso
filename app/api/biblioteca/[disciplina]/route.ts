@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readPath } from "@/lib/store";
-import { DISCIPLINA_POR_ID } from "@/lib/constants";
+import { DISCIPLINA_POR_ID, EXTRA_POR_ID } from "@/lib/constants";
 import type { Aula } from "@/lib/types";
 
 // sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_request: Request, { params }: { params: { disciplina: string } }) {
   try {
-    if (!DISCIPLINA_POR_ID[params.disciplina]) {
+    if (!DISCIPLINA_POR_ID[params.disciplina] && !EXTRA_POR_ID[params.disciplina]) {
       return NextResponse.json({ error: "Disciplina não encontrada" }, { status: 404 });
     }
 

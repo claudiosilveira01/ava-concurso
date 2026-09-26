@@ -9,7 +9,7 @@ import { slugify } from "./utils";
 import { extrairMetadadosPDF } from "./pdfParser";
 import type { Aula, SyncResult } from "./types";
 
-const CAMINHO_PADRAO = "H:\\Meu Drive\\Documentos\\POTENCIAL CONCURSOS";
+const CAMINHO_PADRAO = "C:\\Users\\webap\\Documents\\POTENCIAL CONCURSOS";
 const LEITURAS_PDF_EM_PARALELO = 6;
 
 export function pastaAulasConfigurada(): string {

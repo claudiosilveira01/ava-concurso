@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import { readPath } from "@/lib/store";
+import { supabaseConfigurado, sbLinkPdf } from "@/lib/supabase";
 import type { Aula } from "@/lib/types";
 
 // sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
@@ -14,6 +15,11 @@ export async function GET(
     const aula = await readPath<Aula>(`aulas/${params.disciplina}/${params.aulaId}`);
     if (!aula) {
       return NextResponse.json({ error: "Aula não encontrada" }, { status: 404 });
+    }
+
+    // Versão online: o PDF fica no armazenamento privado; gera um link temporário e abre.
+    if (supabaseConfigurado && aula.arquivoChave) {
+      return NextResponse.redirect(await sbLinkPdf(aula.arquivoChave), 302);
     }
 
     const buffer = await fs.readFile(aula.caminhoArquivo);

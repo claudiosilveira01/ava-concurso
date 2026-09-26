@@ -12,6 +12,7 @@ import path from "path";
 import { firebaseAdminConfigurado, getAdminDatabase } from "./firebaseAdmin";
 import { CRONOGRAMA_SEMANAL, DISCIPLINAS_CONFIG } from "./constants";
 import type { Disciplina } from "./types";
+import { supabaseConfigurado, sbLerBlocos, sbGravarBloco, sbRemoverBlocos } from "./supabase";
 
 const DB_FILE = path.join(process.cwd(), ".data", "db.json");
 
@@ -96,9 +97,57 @@ function pushId(): string {
   return `-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 9)}`;
 }
 
+// ─── Backend Supabase (versão online) ───────────────────────────────
+// Os dados são guardados em "blocos": cada linha da tabela ava_dados é um pedaço da
+// árvore (ex.: "aulas/portugues", "relatorios/2026-09-25", "cronograma"). O bloco é
+// formado pelos 2 primeiros segmentos do caminho (ou pelo único, se só houver 1).
+function chaveDoBloco(segs: string[]): string {
+  return segs.slice(0, 2).join("/");
+}
+
+async function sbLer(segs: string[]): Promise<unknown> {
+  if (segs.length === 0) return null;
+  const bloco = chaveDoBloco(segs);
+  if (segs.length === 1) {
+    // raiz de uma coleção: junta o bloco próprio (se existir) com os sub-blocos "raiz/x"
+    const linhas = await sbLerBlocos(bloco);
+    if (linhas.length === 0) return null;
+    let base: Record<string, unknown> = {};
+    for (const l of linhas) {
+      if (l.chave === bloco) base = { ...(l.valor as Record<string, unknown>) };
+    }
+    for (const l of linhas) {
+      if (l.chave !== bloco) base[l.chave.slice(bloco.length + 1)] = l.valor;
+    }
+    return base;
+  }
+  const linhas = await sbLerBlocos(bloco);
+  const linha = linhas.find((l) => l.chave === bloco);
+  if (!linha) return null;
+  return getByPath(linha.valor, segs.slice(2));
+}
+
+async function sbEscrever(segs: string[], value: unknown): Promise<void> {
+  if (segs.length === 0) return;
+  const bloco = chaveDoBloco(segs);
+  if (segs.length <= 2) {
+    if (value === null) await sbRemoverBlocos(bloco);
+    else await sbGravarBloco(bloco, value);
+    return;
+  }
+  const linhas = await sbLerBlocos(bloco);
+  const atual = linhas.find((l) => l.chave === bloco)?.valor;
+  const raiz: Record<string, unknown> = atual && typeof atual === "object" ? { ...(atual as Record<string, unknown>) } : {};
+  setByPath(raiz, segs.slice(2), value);
+  await sbGravarBloco(bloco, raiz);
+}
+
 export const usandoFirebaseReal = firebaseAdminConfigurado;
 
 export async function readPath<T = unknown>(pathStr: string): Promise<T | null> {
+  if (supabaseConfigurado) {
+    return ((await sbLer(pathStr.split("/").filter(Boolean))) ?? null) as T | null;
+  }
   if (usandoFirebaseReal) {
     const snap = await getAdminDatabase().ref(pathStr).get();
     return (snap.exists() ? snap.val() : null) as T | null;
@@ -108,6 +157,10 @@ export async function readPath<T = unknown>(pathStr: string): Promise<T | null> 
 }
 
 export async function writePath(pathStr: string, value: unknown): Promise<void> {
+  if (supabaseConfigurado) {
+    await sbEscrever(pathStr.split("/").filter(Boolean), value);
+    return;
+  }
   if (usandoFirebaseReal) {
     await getAdminDatabase().ref(pathStr).set(value);
     return;
@@ -118,6 +171,12 @@ export async function writePath(pathStr: string, value: unknown): Promise<void> 
 }
 
 export async function updatePath(pathStr: string, value: Record<string, unknown>): Promise<void> {
+  if (supabaseConfigurado) {
+    const segs = pathStr.split("/").filter(Boolean);
+    const atual = ((await sbLer(segs)) as Record<string, unknown>) || {};
+    await sbEscrever(segs, { ...atual, ...value });
+    return;
+  }
   if (usandoFirebaseReal) {
     await getAdminDatabase().ref(pathStr).update(value);
     return;
@@ -135,6 +194,10 @@ export async function pushPath(pathStr: string, value: unknown): Promise<string>
 }
 
 export async function removePath(pathStr: string): Promise<void> {
+  if (supabaseConfigurado) {
+    await sbEscrever(pathStr.split("/").filter(Boolean), null);
+    return;
+  }
   if (usandoFirebaseReal) {
     await getAdminDatabase().ref(pathStr).remove();
     return;

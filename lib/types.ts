@@ -32,6 +32,7 @@ export interface Aula {
   data: string | null; // YYYY-MM-DD extraída de dentro do PDF (nem todo PDF traz)
   professor?: string;
   caminhoArquivo: string; // caminho absoluto do PDF na pasta local
+  arquivoChave?: string; // caminho do PDF no armazenamento online (Supabase), quando publicado
   nomeArquivo: string;
   tamanho?: number;
   concluida: boolean;

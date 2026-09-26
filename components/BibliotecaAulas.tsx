@@ -14,7 +14,7 @@ import {
   marcarAula,
   sincronizarBiblioteca,
 } from "@/components/hooks/useAulas";
-import { DISCIPLINAS_CONFIG, DISCIPLINA_POR_ID } from "@/lib/constants";
+import { DISCIPLINAS_CONFIG, DISCIPLINA_POR_ID, EXTRAS_CONFIG, EXTRA_POR_ID } from "@/lib/constants";
 import { cn, formatarDataBR } from "@/lib/utils";
 import type { Aula } from "@/lib/types";
 
@@ -97,6 +97,13 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
                 {disciplina.nome}
               </option>
             ))}
+            <optgroup label="Material extra">
+              {EXTRAS_CONFIG.map((extra) => (
+                <option key={extra.id} value={extra.id}>
+                  {extra.nome}
+                </option>
+              ))}
+            </optgroup>
           </Select>
           <Input
             value={busca}
@@ -122,7 +129,7 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
       ) : (
         <div className="flex flex-col gap-2">
           {aulasFiltradas.map((aula) => {
-            const config = DISCIPLINA_POR_ID[aula.disciplinaId];
+            const config = DISCIPLINA_POR_ID[aula.disciplinaId] ?? EXTRA_POR_ID[aula.disciplinaId];
             const cor = config?.cor || COR_FALLBACK;
             const nomeDisciplina = config?.nome || aula.disciplinaId;
             return (

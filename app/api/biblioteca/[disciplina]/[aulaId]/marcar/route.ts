@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readPath, updatePath } from "@/lib/store";
 import { marcarAulaSchema } from "@/lib/validation";
 import { calcularProgresso } from "@/lib/utils";
+import { ehExtra } from "@/lib/constants";
 import type { Aula } from "@/lib/types";
 
 // sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
@@ -27,6 +28,11 @@ export async function POST(
 
     const completadoEm = concluida ? new Date().toISOString() : null;
     await updatePath(aulaPath, { concluida, completadoEm });
+
+    // Material extra não tem progresso de disciplina: só marca a aula e pronto.
+    if (ehExtra(params.disciplina)) {
+      return NextResponse.json({ success: true, completadoEm, progresso: 0 });
+    }
 
     const todasAulas = await readPath<Record<string, Aula>>(`aulas/${params.disciplina}`);
     const lista = todasAulas ? Object.values(todasAulas) : [];

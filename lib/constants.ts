@@ -56,6 +56,32 @@ export const DISCIPLINAS_CONFIG: DisciplinaConfig[] = [
   { id: "redacao", nome: "Redação", cor: "#84CC16", icone: "PenLine", pastaLocal: "REDACAO_TJ" },
 ];
 
+/**
+ * Material extra: pastas de PDFs que NÃO fazem parte do cronograma semanal. Aparecem só
+ * na Biblioteca, num grupo à parte. O id sempre começa com "extra_" (é assim que o sistema
+ * sabe que não entra na conta de progresso das disciplinas).
+ */
+export interface ExtraConfig {
+  id: string;
+  nome: string;
+  cor: string;
+  pastaLocal: string;
+}
+
+export const EXTRAS_CONFIG: ExtraConfig[] = [
+  { id: "extra_legislacao_alepa", nome: "Legislação ALEPA", cor: "#F97316", pastaLocal: "LEGISLACAO_ALEPA" },
+  { id: "extra_maratona_gabaritando", nome: "Maratona Gabaritando", cor: "#EF4444", pastaLocal: "MARATONA_GABARITANDO" },
+  { id: "extra_minicurso", nome: "Minicurso", cor: "#8B5CF6", pastaLocal: "MINICURSO" },
+  { id: "extra_simulados", nome: "Simulados", cor: "#06B6D4", pastaLocal: "SIMULADOS" },
+  { id: "extra_mentoria", nome: "Mentoria", cor: "#10B981", pastaLocal: "MENTORIA" },
+];
+
+export const EXTRA_POR_ID: Record<string, ExtraConfig> = Object.fromEntries(EXTRAS_CONFIG.map((e) => [e.id, e]));
+
+export function ehExtra(id: string): boolean {
+  return id.startsWith("extra_");
+}
+
 export const PASTA_PARA_DISCIPLINA: Record<string, string> = Object.fromEntries(
   DISCIPLINAS_CONFIG.map((d) => [d.pastaLocal, d.id])
 );
