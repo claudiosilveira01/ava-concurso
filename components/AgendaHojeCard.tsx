@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CalendarDays, CheckCircle2, ExternalLink, History } from "lucide-react";
 import { useAgendaHoje } from "@/components/hooks/useAgenda";
@@ -9,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { DisciplinaIcon } from "@/components/ui/DisciplinaIcon";
 import { DIAS_SEMANA_LABEL } from "@/lib/constants";
 import { cn, diaSemanaAtual, formatarDataBR, formatarDataISO, slugify } from "@/lib/utils";
-import type { AgendaDia, ItemRevisao } from "@/lib/types";
+import type { AgendaDia, DiaSemana, ItemRevisao } from "@/lib/types";
 
 /** Uma linha da agenda: ou tem checkbox (hoje, editável) ou não (revisão da semana, só informativa). */
 function LinhaAgenda({
@@ -87,8 +88,16 @@ function LinhaAgenda({
 export function AgendaHojeCard() {
   const { agenda, revisaoSemana, loading } = useAgendaHoje();
   const checklist = useChecklist();
-  const diaAtual = diaSemanaAtual();
-  const dataHoje = formatarDataBR(formatarDataISO());
+  // Calculado só depois de montar no navegador: o servidor roda em UTC e o Cláudio em
+  // horário de Brasília, então calcular "hoje" direto no render pode dar dia diferente
+  // entre servidor e navegador perto da virada do dia, quebrando a hidratação do React.
+  const [diaAtual, setDiaAtual] = useState<DiaSemana | null>(null);
+  const [dataHoje, setDataHoje] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDiaAtual(diaSemanaAtual());
+    setDataHoje(formatarDataBR(formatarDataISO()));
+  }, []);
 
   const total = agenda.length;
   const concluidas = agenda.filter((item) => checklist.checklist[slugify(item.disciplinaNome)]).length;
@@ -101,8 +110,8 @@ export function AgendaHojeCard() {
           <div className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-blue-500" />
             <div>
-              <p className="text-base font-bold">{DIAS_SEMANA_LABEL[diaAtual]}</p>
-              <p className="text-sm text-[var(--muted)]">{dataHoje}</p>
+              <p className="text-base font-bold">{diaAtual ? DIAS_SEMANA_LABEL[diaAtual] : " "}</p>
+              <p className="text-sm text-[var(--muted)]">{dataHoje ?? " "}</p>
             </div>
           </div>
           {total > 0 && (

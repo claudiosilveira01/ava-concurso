@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ExternalLink, RefreshCw, CalendarDays, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
@@ -24,13 +25,24 @@ interface AulaComDisciplina extends Aula {
   disciplinaId: string;
 }
 
-export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: string }) {
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<string>(
-    disciplinaInicial || "todas"
-  );
+export function BibliotecaAulas() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  // A disciplina selecionada vive na URL (?disciplina=...), não num estado próprio —
+  // assim um clique num card de disciplina (que navega pra essa mesma URL) sempre
+  // atualiza o filtro, mesmo com o componente já montado na página.
+  const disciplinaSelecionada = searchParams.get("disciplina") || "todas";
   const [busca, setBusca] = useState("");
   const [sincronizando, setSincronizando] = useState(false);
   const { toast } = useToast();
+
+  function selecionarDisciplina(novoId: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (novoId === "todas") params.delete("disciplina");
+    else params.set("disciplina", novoId);
+    const query = params.toString();
+    router.push(`/biblioteca${query ? `?${query}` : ""}`, { scroll: false });
+  }
 
   const todas = disciplinaSelecionada === "todas";
   const biblioteca = useBiblioteca();
@@ -88,7 +100,7 @@ export function BibliotecaAulas({ disciplinaInicial }: { disciplinaInicial?: str
         <div className="flex flex-1 flex-col gap-3 sm:flex-row">
           <Select
             value={disciplinaSelecionada}
-            onChange={(e) => setDisciplinaSelecionada(e.target.value)}
+            onChange={(e) => selecionarDisciplina(e.target.value)}
             className="sm:max-w-xs"
           >
             <option value="todas">Todas as disciplinas</option>

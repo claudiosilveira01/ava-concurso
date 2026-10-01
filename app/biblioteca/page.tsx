@@ -1,11 +1,8 @@
+import { Suspense } from "react";
 import { GridDisciplinas } from "@/components/GridDisciplinas";
 import { BibliotecaAulas } from "@/components/BibliotecaAulas";
 
-export default function BibliotecaPage({
-  searchParams,
-}: {
-  searchParams: { disciplina?: string };
-}) {
+export default function BibliotecaPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -15,7 +12,9 @@ export default function BibliotecaPage({
         </p>
       </div>
       <GridDisciplinas />
-      <BibliotecaAulas disciplinaInicial={searchParams.disciplina} />
+      <Suspense fallback={<p className="text-sm text-[var(--muted)]">Carregando...</p>}>
+        <BibliotecaAulas />
+      </Suspense>
     </div>
   );
 }

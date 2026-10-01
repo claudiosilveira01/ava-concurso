@@ -4,6 +4,10 @@ import { AgendaHojeCard } from "@/components/AgendaHojeCard";
 import { CardsMetricas } from "@/components/CardsMetricas";
 import { Card, CardContent } from "@/components/ui/Card";
 
+// Mostra a data e as aulas de HOJE: sem isso o Next.js prerenderia esta página uma
+// vez no build e congelaria a data/hora daquele momento pra sempre (até o próximo deploy).
+export const dynamic = "force-dynamic";
+
 const ATALHOS = [
   { href: "/biblioteca", label: "Biblioteca", icon: Library },
   { href: "/progresso", label: "Ver Progresso", icon: BarChart3 },

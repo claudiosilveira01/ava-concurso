@@ -17,12 +17,20 @@ function saudacaoPorHorario(): string {
 export function Header({ nomeUsuario = "Cláudio" }: { nomeUsuario?: string }) {
   const [modoEscuro, setModoEscuro] = useState(false);
   const [mobileNavAberto, setMobileNavAberto] = useState(false);
+  // Data e saudação só são calculadas depois de montar no navegador: calculá-las já no
+  // primeiro render faria o servidor (fuso UTC) e o navegador do usuário (ex: horário de
+  // Brasília) às vezes discordarem do dia/hora, quebrando a hidratação do React.
+  const [dataFormatada, setDataFormatada] = useState<string | null>(null);
+  const [saudacao, setSaudacao] = useState<string | null>(null);
 
   useEffect(() => {
     const salvo = localStorage.getItem("ava-dark-mode");
     const escuro = salvo === "true";
     setModoEscuro(escuro);
     document.documentElement.classList.toggle("dark", escuro);
+
+    setDataFormatada(format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR }));
+    setSaudacao(saudacaoPorHorario());
   }, []);
 
   function alternarDarkMode() {
@@ -39,11 +47,9 @@ export function Header({ nomeUsuario = "Cláudio" }: { nomeUsuario?: string }) {
           <Menu className="h-6 w-6" />
         </button>
         <div>
-          <p className="text-sm text-[var(--muted)] capitalize">
-            {format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR })}
-          </p>
+          <p className="text-sm text-[var(--muted)] capitalize">{dataFormatada ?? " "}</p>
           <h1 className="text-lg font-bold">
-            {saudacaoPorHorario()}, {nomeUsuario}
+            {saudacao ?? "Olá"}, {nomeUsuario}
           </h1>
         </div>
       </div>
