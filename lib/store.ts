@@ -44,10 +44,6 @@ function seedInicial(): Record<string, unknown> {
     cronograma: CRONOGRAMA_SEMANAL,
     disciplinas,
     aulas: {},
-    relatorios: {},
-    // "progresso" fica de fora do seed: rotas que fazem readPath("progresso") tratam
-    // qualquer valor salvo como já calculado, então um {} aqui faria elas devolverem
-    // vazio em vez de cair no cálculo de fallback a partir de relatorios/disciplinas.
   };
 }
 

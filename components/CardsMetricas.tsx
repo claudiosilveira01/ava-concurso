@@ -1,14 +1,14 @@
 "use client";
 
-import { BookCheck, FileText, Flame, TrendingUp } from "lucide-react";
+import { BookCheck, Flame, TrendingUp, Trophy } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useProgresso } from "@/components/hooks/useProgresso";
 
 const METRICAS = [
   { chave: "totalAulasCompletadas", label: "Aulas Concluídas", icone: BookCheck, sufixo: "" },
-  { chave: "totalRelatorios", label: "Relatórios Feitos", icone: FileText, sufixo: "" },
+  { chave: "progressoGeral", label: "Progresso Geral", icone: TrendingUp, sufixo: "%" },
   { chave: "diasConsecutivos", label: "Dias Consecutivos", icone: Flame, sufixo: "" },
-  { chave: "desempenhoMedio", label: "Desempenho Médio", icone: TrendingUp, sufixo: "%" },
+  { chave: "disciplinasConcluidas", label: "Disciplinas Concluídas", icone: Trophy, sufixo: "" },
 ] as const;
 
 export function CardsMetricas() {

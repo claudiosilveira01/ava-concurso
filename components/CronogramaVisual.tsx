@@ -3,21 +3,27 @@
 import Link from "next/link";
 import { useCronograma } from "@/components/hooks/useCronograma";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import { DisciplinaIcon } from "@/components/ui/DisciplinaIcon";
 import { DIAS_SEMANA, DIAS_SEMANA_LABEL, DISCIPLINA_POR_ID, nomeDisciplinaParaId } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const COR_FALLBACK = "#3B82F6";
+const COR_FALLBACK = "#94A3B8";
 
 export function CronogramaVisual() {
   const { cronograma, diaAtual, loading } = useCronograma();
 
   if (loading) {
-    return <p className="text-sm text-[var(--muted)]">Carregando...</p>;
+    return (
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+        {DIAS_SEMANA.map((dia) => (
+          <div key={dia} className="h-40 animate-pulse rounded-lg bg-[var(--border)]/40" />
+        ))}
+      </div>
+    );
   }
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-7 md:overflow-visible">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
       {DIAS_SEMANA.map((dia) => {
         const disciplinas = cronograma?.[dia] ?? [];
         const isHoje = dia === diaAtual;
@@ -26,36 +32,47 @@ export function CronogramaVisual() {
           <Card
             key={dia}
             className={cn(
-              "min-w-[220px] flex-shrink-0 md:min-w-0",
-              isHoje && "border-2 border-blue-500 ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950/30"
+              "flex flex-col",
+              isHoje && "border-blue-500 bg-blue-50 ring-2 ring-blue-500/40 dark:bg-blue-950/30"
             )}
           >
-            <CardHeader className="pb-2">
-              <CardTitle className={isHoje ? "text-blue-500" : undefined}>
+            <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+              <CardTitle className={cn("text-sm", isHoje && "text-blue-600 dark:text-blue-400")}>
                 {DIAS_SEMANA_LABEL[dia]}
               </CardTitle>
+              {isHoje && (
+                <span className="shrink-0 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                  Hoje
+                </span>
+              )}
             </CardHeader>
-            <CardContent className="flex flex-col gap-2 pt-0">
+            <CardContent className="flex flex-1 flex-col gap-2 pt-0">
               {disciplinas.length === 0 ? (
-                <p className="text-xs text-[var(--muted)]">Sem disciplinas.</p>
+                <p className="text-xs text-[var(--muted)]">Dia livre, sem disciplinas.</p>
               ) : (
                 disciplinas.map((nome) => {
                   const id = nomeDisciplinaParaId(nome);
-                  const cor = (id && DISCIPLINA_POR_ID[id]?.cor) || COR_FALLBACK;
-                  const chip = (
-                    <Badge
-                      key={nome}
-                      className="w-fit cursor-pointer"
-                      style={{ backgroundColor: cor, color: "#fff" }}
+                  const config = id ? DISCIPLINA_POR_ID[id] : undefined;
+                  const cor = config?.cor || COR_FALLBACK;
+
+                  const linha = (
+                    <div
+                      className="flex items-start gap-2 rounded-md border border-[var(--border)] p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                      style={{ borderLeftColor: cor, borderLeftWidth: 3 }}
                     >
-                      {nome}
-                    </Badge>
+                      <DisciplinaIcon icone={config?.icone} className="mt-0.5 h-4 w-4 shrink-0" style={{ color: cor }} />
+                      <span className="break-words text-sm font-medium leading-snug" style={{ color: cor }}>
+                        {nome}
+                      </span>
+                    </div>
                   );
-                  if (!id) return chip;
-                  return (
+
+                  return id ? (
                     <Link key={nome} href={`/biblioteca?disciplina=${id}`}>
-                      {chip}
+                      {linha}
                     </Link>
+                  ) : (
+                    <div key={nome}>{linha}</div>
                   );
                 })
               )}

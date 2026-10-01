@@ -2,24 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  CalendarDays,
-  BookOpen,
-  Library,
-  FileText,
-  BarChart3,
-  GraduationCap,
-} from "lucide-react";
+import { LayoutDashboard, CalendarDays, Library, BarChart3, GraduationCap } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const ICONS = {
   LayoutDashboard,
   CalendarDays,
-  BookOpen,
   Library,
-  FileText,
   BarChart3,
 } as const;
 

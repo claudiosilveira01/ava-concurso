@@ -106,8 +106,6 @@ export function nomeDisciplinaParaId(nome: string): string | undefined {
 export const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: "LayoutDashboard" },
   { href: "/cronograma", label: "Cronograma", icon: "CalendarDays" },
-  { href: "/disciplinas", label: "Disciplinas", icon: "BookOpen" },
   { href: "/biblioteca", label: "Biblioteca", icon: "Library" },
-  { href: "/relatorios", label: "Relatórios", icon: "FileText" },
   { href: "/progresso", label: "Progresso", icon: "BarChart3" },
 ] as const;

@@ -40,51 +40,14 @@ export interface Aula {
   criadoEm: string;
 }
 
-export interface Relatorio {
-  data: string; // YYYY-MM-DD
-  diasEstudados: string[];
-  disciplinasEstudadas: string[];
-  conceitos: string;
-  duvidas: string;
-  erros: string;
-  desempenho: Record<string, number>;
-  desempenhoMedio: number;
-  pontoPositivos: string;
-  proximasAcoes: string;
-  criadoEm: string;
-  atualizadoEm: string;
-  markdown: string;
-}
-
-export interface RelatorioFormData {
-  data?: string;
-  diasEstudados: string[];
-  disciplinasEstudadas: string[];
-  conceitos: string;
-  duvidas: string;
-  erros: string;
-  desempenho: Record<string, number>;
-  pontoPositivos: string;
-  proximasAcoes: string;
-}
-
+/** Progresso geral: calculado a partir das disciplinas e das datas de conclusão das aulas. */
 export interface Progresso {
   totalAulasCompletadas: number;
-  totalRelatorios: number;
-  diasConsecutivos: number;
-  desempenhoMedio: number;
-  desempenhoPorDisciplina: Record<string, number>;
+  totalAulasGeral: number;
+  progressoGeral: number; // 0-100, soma de todas as disciplinas
+  diasConsecutivos: number; // dias seguidos com pelo menos 1 aula concluída
+  disciplinasConcluidas: number; // disciplinas 100% concluídas
   ultimaAtualizacao: string;
-}
-
-export interface ProgressoSemanal {
-  semana: string; // YYYY-MM-DD (segunda-feira da semana)
-  totalAulasConcluidas: number;
-  totalRelatorios: number;
-  diasConsecutivos: number;
-  desempenhoMedio: number;
-  desempenhoPorDisciplina: Record<string, number>;
-  atualizado: string;
 }
 
 /** Agenda inteligente do dia: para cada disciplina do cronograma de hoje, qual é a próxima aula pendente. */

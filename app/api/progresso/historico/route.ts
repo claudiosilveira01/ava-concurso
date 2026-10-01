@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readPath } from "@/lib/store";
 import { formatarDataISO, inicioDaSemana } from "@/lib/utils";
-import type { Relatorio } from "@/lib/types";
+import type { Aula } from "@/lib/types";
 
 // sempre roda no request, nunca cacheia estático (os dados mudam a qualquer momento)
 export const dynamic = "force-dynamic";
@@ -12,11 +12,15 @@ export async function GET(request: NextRequest) {
     const totalSemanasPedidas = semanasParam ? parseInt(semanasParam, 10) : 4;
     const totalSemanas = Number.isFinite(totalSemanasPedidas) && totalSemanasPedidas > 0 ? totalSemanasPedidas : 4;
 
-    const relatoriosSalvos = (await readPath<Record<string, Relatorio>>("relatorios")) || {};
-    const relatorios = Object.values(relatoriosSalvos);
+    const todasAulas = (await readPath<Record<string, Record<string, Aula>>>("aulas")) || {};
+    const datasConclusao: string[] = [];
+    for (const aulasDaDisciplina of Object.values(todasAulas)) {
+      for (const aula of Object.values(aulasDaDisciplina)) {
+        if (aula.completadoEm) datasConclusao.push(aula.completadoEm.slice(0, 10));
+      }
+    }
 
     const segundaAtual = inicioDaSemana(formatarDataISO());
-
     const semanas: { segunda: string; domingo: string }[] = [];
     for (let i = totalSemanas - 1; i >= 0; i--) {
       const dataSegunda = new Date(`${segundaAtual}T00:00:00`);
@@ -30,14 +34,10 @@ export async function GET(request: NextRequest) {
       semanas.push({ segunda, domingo });
     }
 
-    const historico = semanas.map(({ segunda, domingo }) => {
-      const relatoriosDaSemana = relatorios.filter((r) => r.data >= segunda && r.data <= domingo);
-      const totalRelatorios = relatoriosDaSemana.length;
-      const desempenhoMedio = totalRelatorios
-        ? relatoriosDaSemana.reduce((soma, r) => soma + r.desempenhoMedio, 0) / totalRelatorios
-        : 0;
-      return { semana: segunda, desempenhoMedio, totalRelatorios };
-    });
+    const historico = semanas.map(({ segunda, domingo }) => ({
+      semana: segunda,
+      aulasConcluidas: datasConclusao.filter((d) => d >= segunda && d <= domingo).length,
+    }));
 
     return NextResponse.json(historico, { status: 200 });
   } catch (error) {
